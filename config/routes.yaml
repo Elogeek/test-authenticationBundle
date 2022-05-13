@@ -5,3 +5,8 @@ controllers:
 kernel:
     resource: ../src/Kernel.php
     type: annotation
+
+# config authntificationBundle
+api_login_check:
+    path: /api/login_check
+
