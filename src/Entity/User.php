@@ -13,10 +13,10 @@ class User
     #[ORM\Column(type: 'integer')]
     private ?int $id;
 
-    #[ORM\Column(type: 'varchar')]
+    #[ORM\Column(type: 'string', length: 255, nullable: false)]
     private ?string $username;
 
-    #[ORM\Column(type: 'varchar')]
+    #[ORM\Column(type: 'string', nullable: false)]
     private ?string $password;
 
     /**
