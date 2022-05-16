@@ -8,11 +8,6 @@ lexik_jwt_authentication:
     # in seconds, default is 3600
     token_ttl: 3600
 
-    # Additional public keys are used to verify signature of incoming tokens, if the key provided in "public_key" configuration node doesn't verify the token
-    additional_public_keys:
-        - '%kernel.project_dir%/config/jwt/public1.pem'
-        - '%kernel.project_dir%/config/jwt/public2.pem'
-        - '%kernel.project_dir%/config/jwt/public3.pem'
     # token encoding/decoding settings
     encoder:
         # token encoder/decoder service - default implementation based on the lcobucci/jwt library
@@ -47,3 +42,6 @@ lexik_jwt_authentication:
             cookies:
                 - jwt_hp
                 - jwt_s
+
+        # remove the token from the response body when using cookies
+        remove_token_from_body_when_cookies_used: true
