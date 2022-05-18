@@ -5,9 +5,9 @@ security:
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
     # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
     providers:
-        app_user_provider:
-            entity: [App\Entity\User]
-            property: email
+       # app_user_provider:
+           # entity: [App\Entity\User]
+           # property: email
         jwt:
             lexik_jwt: ~
 
@@ -26,17 +26,22 @@ security:
         login:
             pattern: ^/api/login$
             stateless: true
-            anonymous: true
-            provider: app_user_provider
+            #anonymous: true
+            #provider: app_user_provider
             json_login:
                 check_path: login
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
+            custom_authenticator: App\Security\AppAuthenticator
+            logout:
+                path: app_logout
+                # where to redirect after logout
+                # target: app_any_route
         api:
-            provider: jwt
+            #provider: jwt
             pattern:   ^/api
             stateless: true
-            anonymous: true
+            #anonymous: true
             jwt: ~
 
 when@test:
