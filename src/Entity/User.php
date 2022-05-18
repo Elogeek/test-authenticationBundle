@@ -2,58 +2,135 @@
 
 namespace App\Entity;
 
+
+use ApiPlatform\Core\Action\NotFoundAction;
+use ApiPlatform\Core\Annotation\ApiResource;
+use App\Controller\MeController;
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Lexik\Bundle\JWTAuthenticationBundle\Security\User\JWTUserInterface;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-class User
-{
+#[ApiResource(
+    security : 'is_granted("ROLE_USER")',
+    collectionOperations: [
+        "me" => [
+            "pagination_enabled" => false,
+            "path" => "/me",
+            "method" => "get",
+            "controller" => MeController::class,
+            "read" => false,
+            "openapi_context" => [
+                "security" => ["bearerAuth" => []]
+            ]
+        ],
+    ],
+    itemOperations: [
+        "get" => [
+            "controller" => NotFoundAction::class,
+            "openapi_context" => ["summary" => "hidden"],
+            "read" => false,
+            "output" => false
+        ]
+    ],
+    normalizationContext: ["groups" => ["read:User"]]
+)]
+class User implements UserInterface, PasswordAuthenticatedUserInterface, JWTUserInterface {
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    private ?int $id;
+    #[Groups(['read:User'])]
+    private int $id;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: false)]
-    private ?string $username;
+    #[ORM\Column(type: 'string', length: 180, unique: true)]
+    #[Groups(['read:User'])]
+    private string $email;
 
-    #[ORM\Column(type: 'string', nullable: false)]
-    private ?string $password;
+    #[ORM\Column(type: 'json')]
+    #[Groups(['read:User'])]
+    private $roles = ["ROLE_USER"];
 
-    /**
-     * @return int|null
-     */
-    public function getId() : ?int {
+    #[ORM\Column(type: 'string')]
+    #[Groups(['read:User'])]
+    private string $password;
+
+    public function getId(): ?int {
         return $this->id;
     }
 
-    /**
-     * @return string|null
-     */
-    public function getUsername(): ?string {
-        return $this->username;
+    public function setId(?int $id): self {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    public function getEmail(): ?string {
+        return $this->email;
+    }
+
+    public function setEmail(string $email): self {
+        $this->email = $email;
+
+        return $this;
     }
 
     /**
-     * @param mixed $username
+     * A visual identifier that represents this user.
+     *
+     * @see UserInterface
      */
-    public function setUsername( User $username): self {
-        $this->username = $username;
-        return  $this;
+    public function getUserIdentifier(): string {
+        return (string) $this->email;
+    }
+
+    public function getUsername(): string {
+        return (string) $this->email;
     }
 
     /**
-     * @return string|null
+     * @see UserInterface
      */
-    public function getPassword(): ?string {
+    public function getRoles(): array {
+        $roles = $this->roles;
+        // guarantee every user at least has ROLE_USER
+        $roles[] = 'ROLE_USER';
+
+        return array_unique($roles);
+    }
+
+    public function setRoles(array $roles): self {
+        $this->roles = $roles;
+
+        return $this;
+    }
+
+    /**
+     * @see PasswordAuthenticatedUserInterface
+     */
+    public function getPassword(): string {
         return $this->password;
     }
 
-    /**
-     * @param mixed $password
-     */
-    public function setPassword(User $password): self {
+    public function setPassword(string $password): self {
         $this->password = $password;
+
         return $this;
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function eraseCredentials() {
+        // If you store any temporary, sensitive data on the user, clear it here
+        // $this->plainPassword = null;
+    }
+
+    public static function createFromPayload($id, array $payload) {
+        return (new User())->setId($id)->setRoles($payload['roles'])->setEmail($payload['username'] ?? "");
     }
 
 }

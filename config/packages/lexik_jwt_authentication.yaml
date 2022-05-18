@@ -5,43 +5,43 @@ lexik_jwt_authentication:
     public_key: '%env(resolve:JWT_PUBLIC_KEY)%'
     # required for token creation
     pass_phrase: '%env(JWT_PASSPHRASE)%'
-    # in seconds, default is 3600
-    token_ttl: 3600
+    # identifie l'user via son id
+    user_identity_field: id
 
     # token encoding/decoding settings
-    encoder:
+   # encoder:
         # token encoder/decoder service - default implementation based on the lcobucci/jwt library
-        service: lexik_jwt_authentication.encoder.lcobucci
+      #  service: lexik_jwt_authentication.encoder.lcobucci
 
         # encryption algorithm used by the encoder service
-        signature_algorithm: RS256
+       # signature_algorithm: RS256
 
     # token extraction settings
-    token_extractors:
+   # token_extractors:
         # look for a token as Authorization Header
-        authorization_header:
-            enabled: true
-            prefix: Bearer
-            name: Authorization
+        #authorization_header:
+          #  enabled: true
+           # prefix: Bearer
+           # name: Authorization
 
         # check token in a cookie
-        cookie:
-            enabled: true
-            name: BEARER
+      #  cookie:
+            #enabled: true
+            #name: BEARER
 
-        set_cookies:
-            BEARER: ~
+        #set_cookies:
+         #   BEARER: ~
         # check token in query string parameter
-        query_parameter:
-            enabled: false
-            name: bearer
+      #  query_parameter:
+        #    enabled: false
+        #    name: bearer
 
         # check token in a cookie
-        split_cookie:
-            enabled: false
-            cookies:
-                - jwt_hp
-                - jwt_s
+       # split_cookie:
+          #  enabled: false
+          #  cookies:
+         #       - jwt_hp
+           #     - jwt_s
 
         # remove the token from the response body when using cookies
-        remove_token_from_body_when_cookies_used: true
+      #  remove_token_from_body_when_cookies_used: true
