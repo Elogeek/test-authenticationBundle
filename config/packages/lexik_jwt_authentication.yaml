@@ -1,11 +1,11 @@
 lexik_jwt_authentication:
-    # required for token creation
+    # Required for token creation
     secret_key: '%env(resolve:JWT_SECRET_KEY)%'
-    # required for token verification
+    # Required for token verification
     public_key: '%env(resolve:JWT_PUBLIC_KEY)%'
-    # required for token creation
+    # Required for token creation
     pass_phrase: '%env(JWT_PASSPHRASE)%'
-    # identifie l'user via son id
+    # Identifie l'user via son id
     user_identity_field: id
 
     # token encoding/decoding settings
